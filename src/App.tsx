@@ -15,6 +15,11 @@ function App() {
     setGreetMsg(await invoke("greet", { name }));
   }
 
+  async function connect() {
+    await invoke("connect", { host: "127.0.0.1", port: 24 });
+    
+  }
+
   return (
     <div className="container">
       <h1>Hej axel!</h1>
@@ -46,6 +51,8 @@ function App() {
           placeholder="Enter a name..."
         />
         <button type="submit">Greet</button>
+        <button type="button" onClick={connect}>Connect</button>
+        
       </form>
 
       <p>{greetMsg}</p>
