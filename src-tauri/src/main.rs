@@ -6,7 +6,7 @@ mod commands; // Include the commands module
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![commands::connect, commands::disconnect, commands::send_time])
+        .invoke_handler(tauri::generate_handler![commands::connect, commands::disconnect, commands::send_time, commands::send_flag])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

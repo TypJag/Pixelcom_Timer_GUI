@@ -70,3 +70,40 @@ pub fn send_to_pixel_time(time: u32) -> Result<(), String> {
         Ok(())
     }
 }
+
+// Function to send flag command to the pixel
+pub fn send_to_pixel_flag_command(flag: &str) -> Result<(), String> {
+    let connected = GLOBAL_STREAM.lock().unwrap().is_some();
+    let hex_string = match flag {
+        "no" => "6908086900010000000000000116",     // Turn off penalty board
+        "yellow" => "6908086900011c00000000001d16", // Yellow flag
+        "finish" => "6908086900010600000000646b16", // Finish flag
+        "green" => "6908086900011f00000000002016",  // Green flag (Needs correct value)
+        "red" => "6908086900011b00000000001c16",    // Red flag (Needs correct value)
+        "showTime" => "6908086900010e09003300004b16", // Show time (Needs correct value)
+        _ => return Err("Invalid flag".to_string()),
+    };
+
+    if connected {
+        // Lock the Mutex and get the global stream
+        let mut global_stream = GLOBAL_STREAM.lock().unwrap();
+
+        if let Some(conn) = global_stream.as_mut() {
+            // Convert the hex string to bytes
+            let bytes: Vec<u8> = match hex::decode(hex_string) {
+                Ok(b) => b,
+                Err(_) => return Err("Failed to decode hex string".to_string()),
+            };
+
+            // Send the bytes
+            match conn.write_all(&bytes) {
+                Ok(_) => Ok(()),
+                Err(_) => Err("Failed to send to pixel".to_string()),
+            }
+        } else {
+            Err("No connection available".to_string())
+        }
+    } else {
+        Ok(())
+    }
+}

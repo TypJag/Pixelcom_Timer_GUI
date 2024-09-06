@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { VStack } from 'react-stacked'
+import { invoke } from '@tauri-apps/api/tauri'
 
 const Button = styled.button<{ color: string, pattern?: 'checkered' | null }>`
   background-color: ${props => props.color};
@@ -21,12 +22,19 @@ const Button = styled.button<{ color: string, pattern?: 'checkered' | null }>`
 const Flags: React.FC = () => {
   const changeFlag = (flag: string): void => {
     console.log(`Flag changed to ${flag}`)
+    alert(`Flag changed to ${flag}`)
     // Add rust call here
+
+    invoke('send_flag', { flag }).then((response) => {
+      console.log(response)
+    }).catch((error) => {
+      console.error(error)
+    })
   }
 
   return (
     <VStack width={200} justifyContent='stretch' alignItems='stretch' height='100%' gap={8}>
-      <Button color='grey' onClick={() => changeFlag('noFlag')}>No Flag</Button>
+      <Button color='grey' onClick={() => changeFlag('red')}>No Flag</Button>
       <Button color='red' onClick={() => changeFlag('red')} />
       <Button color='green' onClick={() => changeFlag('green')} />
       <Button color='yellow' onClick={() => changeFlag('yellow')} />
